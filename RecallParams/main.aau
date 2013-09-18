@@ -1,0 +1,74 @@
+import win.ui;
+import inet.http;
+import web.json;
+import win.clip;
+/*DSG{{*/
+mainForm = ..win.form( text="广告";right=559;bottom=327 )
+mainForm.add( 
+button2={ bottom=168;text="取消";left=248;top=136;z=4;right=368;cls="button" };
+static3={ bottom=119;align="right";right=151;left=40;top=96;center=1;z=5;text="AD Params";transparent=1;cls="static" };
+button3={ bottom=120;text="copy to Clipboard";left=320;top=96;z=7;right=424;cls="button" };
+button={ bottom=168;text="获得URL参数";left=104;top=136;z=3;right=224;cls="button" };
+static={ bottom=88;align="right";right=152;left=40;top=64;center=1;z=2;text="Recall Term:";transparent=1;cls="static" };
+adParams={ bottom=120;right=304;left=168;top=96;z=6;edge=1;cls="edit" };
+combobox={ bottom=90;right=304;left=168;
+items={  };text="请选择活动期数";z=1;top=64;mode="dropdown";edge=1;cls="combobox" }
+)
+/*}}*/
+
+mainForm.button2.oncommand = function(id,event){
+	//mainForm.msgbox( mainForm.button2.text );
+	mainForm.close();
+}
+
+
+mainForm.button3.oncommand = function(id,event){
+	//mainForm.msgbox( mainForm.button3.text );
+	win.clip.write(mainForm.adParams.text);
+	mainForm.msgbox("copy success");	
+}
+
+
+mainForm.button.oncommand = function(id,event){
+	//win.msgbox(mainForm.combobox.text,"mainForm.combobox.text;");
+	//mainForm.combobox.text;
+	var term = mainForm.combobox.text;
+	var url = "http://fs-dev-facebook.shinezone.com/vrelease/dev_lwy/j7.php?/test/generateRecallAdParam&_rc_u=0" ++ "&_rc_a="++term++"&_rc_t="++currentTime ;
+	var responseContent,status = inet.http().get(url);
+	//win.msgbox(responseContent,"responseContent");
+	mainForm.adParams.text = responseContent;
+}
+/***
+import config;
+mainForm.bindConfig( config.mainForm,{
+	edit = "text"; //绑定edit控件的text属性值到配置文件
+	radiobutton = "checked";
+	checkbox = "checked";
+	combobox = "selIndex";
+} );
+***/
+
+var url = "http://fs-dev-facebook.shinezone.com/vrelease/dev_lwy/j7.php?/test/getRecallTerm";
+
+var responseContent,status = inet.http().get(url);
+var currentTime;
+
+//win.msgbox(responseContent,"responseContent");
+if (status == 200) {
+	var data = web.json.parse(responseContent);
+	//win.msgbox(data,"data");
+	for (k,v in data) {
+		//win.msgbox(v,"v");
+		mainForm.combobox.add(""++v);
+	}
+	var url = "http://fs-dev-facebook.shinezone.com/vrelease/dev_lwy/j7.php?/test/getTime";
+	..currentTime,status = inet.http().get(url);
+} else {
+	win.msgbox("请求 http://fs-dev-facebook.shinezone.com/vrelease/dev_lwy/j7.php?/test/getRecallTerm 返回的状态码为："++status,"status");
+}
+//win.msgbox(responseContent,"responseContent");
+//win.msgbox(status,"status");
+
+
+mainForm.show(); 
+win.loopMessage(); 

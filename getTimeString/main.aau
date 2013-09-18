@@ -1,0 +1,61 @@
+import win.ui;
+import time.zone;
+import inet.http;
+import preg;
+/*DSG{{*/
+mainForm = ..win.form( text="getTimeString";right=543;bottom=319 )
+mainForm.add( 
+cancel={ bottom=160;text="取消";left=256;top=136;z=4;right=344;cls="button" };
+static={ bottom=88;align="right";right=208;left=72;top=64;center=1;transparent=1;text="时间戳：";z=1;cls="static" };
+button={ bottom=160;text="确定";left=144;top=136;z=3;right=232;cls="button" };
+timestamp={ bottom=88;right=384;left=224;top=64;z=2;edge=1;cls="edit" };
+timestampString={ bottom=120;right=383;left=224;top=96;z=6;edge=1;cls="edit" };
+timeStampLabel={ bottom=111;align="right";right=207;left=72;top=88;center=1;transparent=1;text="时间字符串：";z=5;cls="static" }
+)
+/*}}*/
+
+mainForm.timestamp.oncommand = function(id,event){
+	//mainForm.msgbox( mainForm.timestamp.text );
+     select(event) {
+         case 0x300/*_EN_CHANGE*/ {  
+            var timeStampValue = mainForm.timestamp.text;
+            var regex = preg("^\s*\d+\s*$");
+			keywords,j = regex.match (timeStampValue); 
+			if (keywords == null) {
+				win.msgbox("请输入正确的时间戳---纯数字", "时间戳错误--非数字");
+			} else {
+				var url = "http://fs-dev-facebook.shinezone.com/vrelease/dev_lwy/j7.php?/test/getTimeStr&timestamp=" ++ timeStampValue;
+				var responseContent,status = inet.http().get(url);
+				mainForm.timestampString.text = responseContent;
+			}
+			
+			//win.msgbox(j, "j");
+			
+         }    
+ 	} 	
+}
+
+
+
+
+mainForm.button.oncommand = function(id,event){
+	var timeStampValue = mainForm.timestamp.text;
+	var url = "http://fs-dev-facebook.shinezone.com/vrelease/dev_lwy/j7.php?/test/getTimeStr&timestamp=" ++ timeStampValue;
+	var responseContent,status = inet.http().get(url);
+	mainForm.timestampString.text = responseContent;
+}
+mainForm.cancel.oncommand = function(id,event){
+	mainForm.close();
+}
+/***
+import config;
+mainForm.bindConfig( config.mainForm,{
+	edit = "text"; //绑定edit控件的text属性值到配置文件
+	radiobutton = "checked";
+	checkbox = "checked";
+	combobox = "selIndex";
+} );
+***/
+
+mainForm.show() 
+win.loopMessage(); 

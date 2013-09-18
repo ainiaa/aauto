@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="gb2312"?>
+<project ver="2.6" name="ParseConfig" libEmbed="true" icon="..." ProductName="ParseConfig" InternalName="ParseConfig" FileDescription="ParseConfig" FileVersion="0.0.0.1" ProductVersion="0.0.0.1" LegalCopyright="Copyright (C) 作者 2013" ui="win" output="ParseConfig.exe" CompanyName="单位名称" publishDir="/Publish/">
+	<file name="main.aau" path="main.aau"/>
+	<folder name="资源文件" path="res" embed="true"/>
+</project>

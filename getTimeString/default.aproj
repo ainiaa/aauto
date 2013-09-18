@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="gb2312"?>
+<project ver="2.8" name="getTimeString" libEmbed="true" icon="res\1377080529_88466.ico" ProductName="getTimeString" InternalName="getTimeString" FileDescription="getTimeString" FileVersion="0.0.0.5" ProductVersion="0.0.0.5" CompanyName="单位名称" LegalCopyright="Copyright (C) 作者 2013" ui="win" output="getTimeString.exe" publishDir="/Publish/">
+	<file name="main.aau" path="main.aau"/>
+	<folder name="资源文件" path="res" embed="true"/>
+</project>
