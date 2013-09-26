@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="gb2312"?>
+<project ver="2.8" name="calculator" libEmbed="true" icon="..." ProductName="calculator" InternalName="calculator" FileDescription="calculator" FileVersion="0.0.0.1" ProductVersion="0.0.0.1" CompanyName="CompanyName" LegalCopyright="Copyright (C) 作者 2013" ui="win" output="calculator.exe" publishDir="/Publish/">
+	<file name="main.aau" path="main.aau"/>
+	<folder name="资源文件" path="res" embed="true"/>
+</project>

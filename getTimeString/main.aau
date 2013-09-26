@@ -2,68 +2,150 @@ import win.ui;
 import time.zone;
 import inet.http;
 import preg;
+import win.ui.minmax;
 /*DSG{{*/
-mainForm = ..win.form( text="getTimeString";right=535;bottom=303 )
+mainForm = ..win.form( text="getTimeString";right=535;bottom=327 )
 mainForm.add( 
-timestamp2={ bottom=120;right=280;left=120;top=96;z=8;edge=1;cls="edit" };
-cancel={ bottom=160;right=384;left=296;top=136;z=4;text="取消";cls="button" };
-static={ bottom=56;align="center";right=280;left=120;top=32;center=1;transparent=1;text="时间戳   ";z=1;cls="static" };
-static2={ bottom=56;align="center";right=496;left=336;top=32;center=1;transparent=1;text="时间";z=7;cls="static" };
-static3={ bottom=119;align="right";right=335;left=296;top=96;center=1;transparent=1;text="==》   ";z=9;cls="static" };
-timestampString2={ bottom=120;right=495;left=336;top=96;z=10;edge=1;cls="edit" };
-button={ bottom=160;right=280;left=192;top=136;z=3;text="确定";cls="button" };
-timestamp={ bottom=88;right=280;left=120;top=64;z=2;edge=1;cls="edit" };
-timestampString={ bottom=88;right=495;left=336;top=64;z=6;edge=1;cls="edit" };
-timeStampLabel={ bottom=87;align="right";right=335;left=296;top=64;center=1;transparent=1;text="==》   ";z=5;cls="static" }
+timestampStringLabel={ bottom=40;align="center";right=400;left=240;top=16;center=1;transparent=1;text="时间";z=6;cls="static" };
+timestamp={ dr=1;dl=1;bottom=72;right=184;left=24;dt=1;top=48;autohscroll=false;z=2;db=1;autovscroll=false;edge=1;cls="edit" };
+button={ bottom=72;text="添加";left=416;top=48;z=3;right=504;cls="button" };
+timestampLabel={ bottom=40;align="center";right=184;left=24;top=16;center=1;transparent=1;text="时间戳   ";z=1;cls="static" };
+timestampString={ dr=1;dl=1;bottom=72;right=399;left=240;dt=1;top=48;z=5;db=1;edge=1;cls="edit" };
+timestampToStringLabel={ dr=1;dl=1;bottom=71;align="right";text="==》   ";left=192;dt=1;top=48;center=1;transparent=1;db=1;right=239;z=4;cls="static" }
 )
 /*}}*/
 
-mainForm.timestamp.oncommand = function(id,event){
+win.ui.minmax(mainForm,200,300)
+
+//键名排序
+kpairs = function(tab,f){
+    //kpairs被调用时创建闭包
+    var tarr = {}
+    //字典中的数据复制到一个数组中然后进行排序
+    for k in tab
+        ..table.push(tarr, k);
+        ..table.sort(tarr, f);//调用默认的排序函数f对字典中的键进行排序
+    var i = 0 //迭代器计数器.(在闭包中保存值)
+    return function () { //迭代函数
+        i = i + 1
+        if(not tarr[ i ])
+            return null
+        else
+            return tarr[ i ], tab[tarr[ i ]]
+    }
+}
+
+oldtimestampText = "";
+timestampOncommand = function(id,event){
      select(event) {
          case 0x300/*_EN_CHANGE*/ {  
-            var timeStampValue = mainForm.timestamp.text;
+         	var currentTimestampStringId = id + 1;//对应的timestampString
+         	if (id == 2) {
+         		currentTimestampStringId = currentTimestampStringId + 2;
+         	}
+         	//win.msgbox(currentTimestampStringId);
+         	var currentTimeStamp = mainForm.getCtrlById(id);
+         	var currentTimestampString = mainForm.getCtrlById(currentTimestampStringId);
+         	//win.msgbox(id);
+         	
+            var timeStampValue = currentTimeStamp.text;
+            //win.msgbox(timeStampValue);
             var regex = preg("^\s*\d+\s*$");
-			keywords,j = regex.match (timeStampValue); 
-			if (keywords == null) {
+			var keywords,j = regex.match (timeStampValue); 
+			if (keywords == null && timeStampValue != "") {
 				win.msgbox("请输入正确的时间戳---纯数字", "时间戳错误--非数字");
+				currentTimeStamp.text = oldtimestampText;
 			} else {
 				var url = "http://fs-dev-facebook.shinezone.com/vrelease/dev_lwy/j7.php?/test/getTimeStr&timestamp=" ++ timeStampValue;
 				var responseContent,status = inet.http().get(url);
-				mainForm.timestampString.text = responseContent;
-			}
-			
-			//win.msgbox(j, "j");
-			
+				var timezone = -23400;//(-8+5)/2*3600
+				currentTimestampString.text = responseContent;
+				var calcuateTime = tonumber(timeStampValue+timezone) + timezone;
+				var timeFormat = time( calcuateTime , "%Y-%m-%d %H:%M:%S");
+				if (tostring(timeFormat) == responseContent) {
+					
+				} else {
+					win.msgbox(tostring(timeFormat) ++ " <===> " ++ responseContent);
+				}
+				oldtimestampText = timeStampValue;
+			}	
          }    
  	} 	
 }
+mainForm.timestamp.oncommand = timestampOncommand;
 
-mainForm.timestamp2.oncommand = function(id,event){
-     select(event) {
-         case 0x300/*_EN_CHANGE*/ {  
-            var timeStampValue = mainForm.timestamp2.text;
-            var regex = preg("^\s*\d+\s*$");
-			keywords,j = regex.match (timeStampValue); 
-			if (keywords == null) {
-				win.msgbox("请输入正确的时间戳---纯数字", "时间戳错误--非数字");
-			} else {
-				var url = "http://fs-dev-facebook.shinezone.com/vrelease/dev_lwy/j7.php?/test/getTimeStr&timestamp=" ++ timeStampValue;
-				var responseContent,status = inet.http().get(url);
-				mainForm.timestampString2.text = responseContent;
-			}
-         }    
- 	} 	
-}
-
-
-
-
+//添加按钮
 mainForm.button.oncommand = function(id,event){
-	mainForm.close();
+	//mainForm.close();
+	index = calcuateIndex(index, 1);
+	if (index < maxIndex) {
+		addNewCombineControl(index);
+	} else {
+		win.msgbox("不能再添加!!");
+		mainForm.button.disabled = true;
+	}
+	
 }
-mainForm.cancel.oncommand = function(id,event){
-	mainForm.close();
+
+index = 0;//添加次数
+editGap = 10;//控件行间隔
+timestampTop = 48;//timestamp控件的top
+timestampBottom = 72;//timestamp控件的bottom
+timestampLeft = 24;//timestamp控件的left
+timestampRight = 184;//timestamp控件的right
+maxIndex = 7;//最大次数
+
+timestampToStringLabelTop = 48;//timestampToStringLabel控件的top
+timestampToStringLabelBottom = 72;//timestampToStringLabel控件的Bottom
+timestampToStringLabelLeft = 192;//timestampToStringLabel控件的Left
+timestampToStringLabelRight = 239;//timestampToStringLabel控件的Right
+
+
+timestampStringTop = 48;//timestampString控件的top
+timestampStringBottom = 72;//timestampString控件的Bottom
+timestampStringLeft = 240;//timestampString控件的top
+timestampStringRight = 399;//timestampString控件的Bottom
+
+
+calcuateIndex = function(index, _count){
+	return index + _count;
 }
+
+addNewCombineControl = function(index){
+	mainForm.add( 
+		["timestamp"+index]={
+        right = tonumber(timestampRight);
+        left = tonumber(timestampLeft);
+        z=1;
+        text=tostring(index);
+        cls="edit";
+        top = timestampTop + index * 40;
+        bottom = timestampBottom + index * 40;
+        oncommand = function(id,event){timestampOncommand(id, event);}
+    };
+    
+    ["timestampToStringLabel"+index]={
+        right=  timestampToStringLabelRight;
+        left = timestampToStringLabelLeft;
+        z = 1;
+        text = "==》   ";
+        cls = "static";
+        top = timestampToStringLabelTop + index * 40;
+        bottom = timestampToStringLabelBottom + index * 40;
+    };
+    ["timestampString"+index]={
+        right = timestampStringRight;
+        left = timestampStringLeft;
+        z = 1;
+        text = tostring(index);
+        cls = "edit";
+        top = timestampStringTop + index * 40;
+        bottom = timestampStringBottom + index *40;
+    };
+	);
+}
+
+
 /***
 import config;
 mainForm.bindConfig( config.mainForm,{
@@ -73,6 +155,9 @@ mainForm.bindConfig( config.mainForm,{
 	combobox = "selIndex";
 } );
 ***/
+
+//win.msgbox(mainForm.width ++":" + mainForm.height);
+win.ui.minmax(mainForm,552,366,552,366);//see http://bbs.aau.cn/forum.php?mod=viewthread&tid=10062&page=1#pid56634  win.ui.minmax(winform,最小宽度,最小高度,最大宽度,最大高度) 
 
 mainForm.show() 
 win.loopMessage(); 
