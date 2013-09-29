@@ -3,9 +3,9 @@ import time.zone;
 import inet.http;
 import preg;
 import win.ui.minmax;
-/*DSG{{*/
+
 mainForm = ..win.form( text="getTimeString";right=535;bottom=327 )
-mainForm.add( 
+mainFormInitResult = mainForm.add( 
 timestampStringLabel={ bottom=40;align="center";right=400;left=240;top=16;center=1;transparent=1;text="时间";z=6;cls="static" };
 timestamp={ dr=1;dl=1;bottom=72;right=184;left=24;dt=1;top=48;autohscroll=false;z=2;db=1;autovscroll=false;edge=1;cls="edit" };
 button={ bottom=72;text="添加";left=416;top=48;z=3;right=504;cls="button" };
@@ -13,9 +13,39 @@ timestampLabel={ bottom=40;align="center";right=184;left=24;top=16;center=1;tran
 timestampString={ dr=1;dl=1;bottom=72;right=399;left=240;dt=1;top=48;z=5;db=1;edge=1;cls="edit" };
 timestampToStringLabel={ dr=1;dl=1;bottom=71;align="right";text="==》   ";left=192;dt=1;top=48;center=1;transparent=1;db=1;right=239;z=4;cls="static" }
 )
-/*}}*/
 
-win.ui.minmax(mainForm,200,300)
+
+win.ui.minmax(mainForm,200,300);
+
+mapIdAndName = {};
+
+findMappedEdit = function(id) {
+	var currentEdit = mapIdAndName[id];
+	var currentEditName = currentEdit["name"];
+	var currentEditIndex = currentEdit["index"];
+	for _currentEditId,_editInfo in mapIdAndName {
+		var _currentEditIndexInFor = _editInfo["index"];
+		var _currentEditNameInFor = _editInfo["name"];
+		var mappedEditName = "timestampString"++currentEditIndex;
+		//win.msgbox(id++" => "++mappedEditName);
+		if (_currentEditNameInFor == mappedEditName) {
+			return mainForm.getCtrlById(_currentEditId); 
+		}
+	}
+	return mainForm.getCtrlById(id);;
+}
+index = 0;//添加次数
+updateMapIdAndName = function(winFormAddResult){
+	for k,v in winFormAddResult {
+		var curr = {};
+		curr["name"] = k;
+		curr["index"] = index == 0 ? "" : index;
+		mapIdAndName[v["id"]] = curr;
+		//win.msgbox(k ++ "=> index:" ++ index);
+	}
+}
+
+updateMapIdAndName(mainFormInitResult);
 
 //键名排序
 kpairs = function(tab,f){
@@ -38,14 +68,10 @@ kpairs = function(tab,f){
 oldtimestampText = "";
 timestampOncommand = function(id,event){
      select(event) {
-         case 0x300/*_EN_CHANGE*/ {  
-         	var currentTimestampStringId = id + 1;//对应的timestampString
-         	if (id == 2) {
-         		currentTimestampStringId = currentTimestampStringId + 2;
-         	}
+         case 0x300/*_EN_CHANGE*/ {
          	//win.msgbox(currentTimestampStringId);
          	var currentTimeStamp = mainForm.getCtrlById(id);
-         	var currentTimestampString = mainForm.getCtrlById(currentTimestampStringId);
+         	var currentTimestampString = findMappedEdit(id);
          	//win.msgbox(id);
          	
             var timeStampValue = currentTimeStamp.text;
@@ -72,6 +98,7 @@ timestampOncommand = function(id,event){
          }    
  	} 	
 }
+
 mainForm.timestamp.oncommand = timestampOncommand;
 
 //添加按钮
@@ -80,14 +107,13 @@ mainForm.button.oncommand = function(id,event){
 	index = calcuateIndex(index, 1);
 	if (index < maxIndex) {
 		addNewCombineControl(index);
-	} else {
-		win.msgbox("不能再添加!!");
-		mainForm.button.disabled = true;
+		if (index == maxIndex-1) {
+			mainForm.button.disabled = true;
+		}
 	}
-	
 }
 
-index = 0;//添加次数
+
 editGap = 10;//控件行间隔
 timestampTop = 48;//timestamp控件的top
 timestampBottom = 72;//timestamp控件的bottom
@@ -112,12 +138,12 @@ calcuateIndex = function(index, _count){
 }
 
 addNewCombineControl = function(index){
-	mainForm.add( 
+	var rs = mainForm.add( 
 		["timestamp"+index]={
         right = tonumber(timestampRight);
         left = tonumber(timestampLeft);
         z=1;
-        text=tostring(index);
+        text="";
         cls="edit";
         top = timestampTop + index * 40;
         bottom = timestampBottom + index * 40;
@@ -137,12 +163,18 @@ addNewCombineControl = function(index){
         right = timestampStringRight;
         left = timestampStringLeft;
         z = 1;
-        text = tostring(index);
+        text = "";
         cls = "edit";
         top = timestampStringTop + index * 40;
         bottom = timestampStringBottom + index *40;
+        //oncommand = function(id,event){testOncommand(id, event);}
     };
 	);
+	
+	updateMapIdAndName(rs);
+	//for t,tt in kpairs(mapIdAndName) {
+	//	win.msgbox(t ++ " => " ++ tt["name"] ++ ":" ++ tt["index"]);
+	//}
 }
 
 
