@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="gb2312"?>
+<project ver="8" name="DSConfigParse" libEmbed="true" icon="C:\Users\Administrator\Desktop\bitbug_favicon.ico" ui="console" output="甜品店配置解析.exe" CompanyName="shinezone" FileDescription="DSConfigParse" LegalCopyright="Copyright (C) Jeff.Liu 2015" ProductName="DSConfigParse" InternalName="DSConfigParse" FileVersion="0.0.0.03" ProductVersion="0.0.0.03" publishDir="/Publish/">
+	<file name="main.aau" path="main.aau"/>
+	<folder name="资源文件" path="res" embed="true"/>
+</project>

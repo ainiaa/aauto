@@ -82,17 +82,18 @@ timestampOncommand = function(id,event){
 				win.msgbox("请输入正确的时间戳---纯数字", "时间戳错误--非数字");
 				currentTimeStamp.text = oldtimestampText;
 			} else {
-				var url = "http://fs-dev-facebook.shinezone.com/vrelease/dev_lwy/j7.php?/test/getTimeStr&timestamp=" ++ timeStampValue;
+				var url = "http://91coding.com/time.php&timestamp=" ++ timeStampValue;
 				var responseContent,status = inet.http().get(url);
 				var timezone = -23400;//(-8+5)/2*3600
 				currentTimestampString.text = responseContent;
 				var calcuateTime = tonumber(timeStampValue+timezone) + timezone;
 				var timeFormat = time( calcuateTime , "%Y-%m-%d %H:%M:%S");
-				if (tostring(timeFormat) == responseContent) {
+				/*if (tostring(timeFormat) == responseContent) {
 					
 				} else {
 					win.msgbox(tostring(timeFormat) ++ " <===> " ++ responseContent);
 				}
+				*/
 				oldtimestampText = timeStampValue;
 			}	
          }    
